@@ -89,8 +89,6 @@ const UploadDocuments = ({ visible, onClose }: ModalProps) => {
       user: 2, // need to make this dynamic
     };
 
-    console.log(files);
-
     const uploadFile = async () => {
       try {
         console.log("uploading file", fileResponse);
