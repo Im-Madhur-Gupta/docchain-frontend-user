@@ -13,6 +13,11 @@ import PdfPreview from "../components/PdfPreview";
 import CustomizedButton from "../components/customizedButton";
 import useAxios from "../hooks/useAxios";
 import { getToken } from "../services/getToken";
+import { Web3Storage } from "web3.storage";
+
+function getAccessToken() {
+  return process.env.WEB3STORAGE_TOKEN;
+}
 
 interface ModalProps {
   visible: boolean;
@@ -67,21 +72,22 @@ const UploadDocuments = ({ visible, onClose }: ModalProps) => {
     }).start();
   }, [visible]);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    // @ts-ignore
+    const client = new Web3Storage({ token: getAccessToken() });
+
     if (fileResponse?.type !== "success") return;
-    const data = new FormData();
 
-    data.append("File", {
-      // @ts-ignore
-      name: fileResponse.name,
-      type: "application/pdf",
-      uri: fileResponse.uri,
-    });
-    data.append("PagesNo", "1");
-    data.append("Title", fileResponse.name.replace(".pdf", ""));
-    data.append("user", "1");
+    // uploading file to web3.storage
+    const blob = await fetch(fileResponse.uri).then((r) => r.blob());
+    const files = [new File([blob], fileResponse.name)];
+    const cid = await client.put(files);
 
-    console.log(data);
+    const data = {
+      PrivateKey: cid,
+      isVerified: false, // need to make this dynamic
+      user: 2, // need to make this dynamic
+    };
 
     const uploadFile = async () => {
       try {
@@ -90,11 +96,11 @@ const UploadDocuments = ({ visible, onClose }: ModalProps) => {
         console.log("Bearer", token);
         const response = await execute({
           method: "POST",
-          url: "userpanel/custom-document/",
+          url: "adminpanel/upload/adhaar", // need to make the url dynamic
           data,
           headers: {
             Authorization: `Bearer ${token}`,
-            "content-Type": "multipart/form-data",
+            "content-Type": "application/json",
           },
         });
         if (response.isErr) throw new Error("Error uploading file");
