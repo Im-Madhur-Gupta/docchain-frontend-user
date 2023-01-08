@@ -14,8 +14,7 @@ export const AuthContext = createContext<IAuthContext>({
     password: string,
     email: string,
     firstName: string,
-    lastName: string,
-    adhaarNo: string
+    lastName: string
   ) => {},
   logout: async () => {},
   verifyOTP: async (id: number, otp: string) => {},
@@ -29,7 +28,6 @@ interface Props {
   children: JSX.Element;
 }
 
-
 const AuthContextProvider = ({ children }: Props) => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [user, setUser] = useState<IUser | null>(null);
@@ -42,33 +40,43 @@ const AuthContextProvider = ({ children }: Props) => {
   };
 
   const loginAPI = async (username: string, password: string) => {
+    console.log("LOGIN API");
     const data = {
       username: username,
       password: password,
     };
-    const res = await execute({
-      method: "POST",
-      url: `login/`,
-      data: data,
-    });
-    if (!res.isErr) {
-      await AsyncStorage.setItem("@token", res.res.tokens.access);
-      setToken(res?.res?.tokens?.access);
-
-      const currUserRes = await getCurrUser();
-
-      if (currUserRes?.isErr === false) {
-        return {
-          isErr: false,
-          res: res.res,
-        };
-      }
-    } else {
-      return {
-        isErr: true,
-        res: res.res,
-      };
+    // const res = await execute({
+    //   method: "POST",
+    //   url: `login/`,
+    //   data: data,
+    // });
+    const res = {
+      isErr: false,
+      res: {},
     }
+    // if (!res.isErr) {
+    //   const accessToken = res.res.tokens.access;
+    //   await AsyncStorage.setItem("@token", accessToken);
+    //   setToken(accessToken);
+
+    //   const user: IUser = {
+    //     firstName: res.res.user.first_name,
+    //     lastName: res.res.user.last_name,
+    //     username: res.res.user.username,
+    //   };
+    //   setUser(user);
+    //   await AsyncStorage.setItem("@user", JSON.stringify(user));
+
+    //   return {
+    //     isErr: false,
+    //     res: res.res,
+    //   };
+    // } else {
+    //   return {
+    //     isErr: true,
+    //     res: res.res,
+    //   };
+    // }
   };
 
   const signupAPI = async (
@@ -76,8 +84,7 @@ const AuthContextProvider = ({ children }: Props) => {
     password: string,
     email: string,
     firstName: string,
-    lastName: string,
-    adhaarNo: string
+    lastName: string
   ) => {
     const data = {
       username: username,
@@ -85,7 +92,6 @@ const AuthContextProvider = ({ children }: Props) => {
       password: password,
       first_name: firstName,
       last_name: lastName,
-      adhaar_no: adhaarNo,
     };
 
     console.log("DATA: ", data);
@@ -168,7 +174,6 @@ const AuthContextProvider = ({ children }: Props) => {
     setToken(null);
     setIsLoggedIn(false);
   };
-  
 
   const value = useMemo(
     () => ({

@@ -54,22 +54,24 @@ const Login = ({
             initialValues={{ username: "", password: "" }}
             onSubmit={async (values) => {
               setLoading(true);
-              const res = await loginAPI(values.username, values.password);
-              if (!res.isErr) {
-                setLoading(false);
-                console.log("LOGIN RES: ", res.res);
-                if (res?.res?.tokens) {
-                  navigation.dispatch(
-                    CommonActions.reset({
-                      index: 0,
-                      routes: [{ name: "Main" }],
-                    })
-                  );
-                }
-              } else {
-                setLoading(false);
-                setErr(true);
-              }
+              // const res = await loginAPI(values.username, values.password);
+              // console.log("Completed Login API", JSON.stringify(res));
+              // if (!res.isErr) {
+              // console.log("Login completed");
+              setLoading(false);
+              // console.log("LOGIN RES: ", res.res);
+              // if (!res.isErr) {
+              navigation.dispatch(
+                CommonActions.reset({
+                  index: 0,
+                  routes: [{ name: "Main" }],
+                })
+              );
+              // } else setErr(true);
+              // } else {
+              //   setLoading(false);
+              //   setErr(true);
+              // }
             }}
           >
             {({ handleChange, handleBlur, handleSubmit, errors, touched }) => (
@@ -118,13 +120,6 @@ const Login = ({
             <Pressable onPress={handlePageChange}>
               <Text style={styles.auth__text}> Signup</Text>
             </Pressable>
-            {/* <Pressable
-              onPress={() => {
-                navigation.navigate("Main");
-              }}
-            >
-              <Text>Click me</Text>
-            </Pressable> */}
           </View>
           {/* <DialogComponent dialog="Email has been sent to you. Please confirm it...." onDone={() => navigation.navigate("Login")} title={"Email Confirmation"} toggleDialog={toggleDialog} visible={visible} /> */}
         </View>

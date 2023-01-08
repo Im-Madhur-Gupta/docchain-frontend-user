@@ -23,7 +23,7 @@ interface LinkData {
   icon: any;
 }
 
-const ProfileCard = ({user} : { user : IUser | null }) => {
+const ProfileCard = ({ user }: { user: IUser | null }) => {
   return (
     <LinearGradient
       colors={["#413DFF", "#547AFF"]}
@@ -32,22 +32,23 @@ const ProfileCard = ({user} : { user : IUser | null }) => {
         backgroundColor: "#547AFF",
         display: "flex",
         flexDirection: "row",
-        justifyContent: "space-evenly",
+        justifyContent: "space-between",
         alignItems: "center",
         alignSelf: "center",
         margin: 20,
         borderRadius: 20,
+        paddingHorizontal: 20,
       }}
     >
       <View style={{ marginVertical: 40 }}>
-        <Text style={styles.cardText}>Name</Text>
-        <Text style={styles.cardText}>Date of Birth</Text>
-        <Text style={styles.cardText}>Aadhaar No.</Text>
+        <Text style={styles.cardText}>First Name</Text>
+        <Text style={styles.cardText}>Last Name</Text>
+        <Text style={styles.cardText}>Username</Text>
       </View>
       <View style={{ marginVertical: 40 }}>
-        <Text style={styles.cardText}>{user?.name}</Text>
-        <Text style={styles.cardText}>04/12/2001</Text>
-        <Text style={styles.cardText}>12345678910</Text>
+        <Text style={styles.cardText}>Kalash</Text>
+        <Text style={styles.cardText}>Shah</Text>
+        <Text style={styles.cardText}>kalash</Text>
       </View>
     </LinearGradient>
   );
@@ -139,7 +140,8 @@ const Profile: React.FC<NavigationProp> = ({ navigation }) => {
   const [user, setUser] = React.useState<IUser | null>(null);
   React.useEffect(() => {
     AsyncStorage.getItem("@user").then((user) => {
-      if(user) {
+      console.log(user);
+      if (user) {
         console.log(user);
         setUser(JSON.parse(user));
       }
@@ -148,7 +150,7 @@ const Profile: React.FC<NavigationProp> = ({ navigation }) => {
 
   return (
     <SafeAreaView style={styles.safeArea}>
-      <ProfileCard user={user}/>
+      <ProfileCard user={user} />
       <ProfileLinks navigation={navigation} />
       <ExtraLinks navigation={navigation} />
     </SafeAreaView>

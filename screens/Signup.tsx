@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Pressable,
-  TextInput
+  TextInput,
 } from "react-native";
 import {
   AuthenticationRoutes,
@@ -21,6 +21,7 @@ import { AuthContext } from "../store/AuthContext";
 import CustomTextInput from "../components/CustomTextInput";
 import { signUpValidationSchema } from "../utils/validations/AuthValidations";
 import { Formik } from "formik";
+import { CommonActions } from "@react-navigation/native";
 
 const Signup = ({
   navigation,
@@ -33,13 +34,8 @@ const Signup = ({
 
   const { signupAPI } = useContext(AuthContext);
 
-  const [visible, setVisible] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const [err, setErr] = React.useState(false);
-
-  const toggleDialog = () => {
-    setVisible(!visible);
-  };
 
   return !loading ? (
     <ScrollView style={styles.main__container}>
@@ -64,7 +60,7 @@ const Signup = ({
               confirmPassword: "",
               firstName: "",
               lastName: "",
-              adhaarNo: ""
+              adhaarNo: "",
             }}
             onSubmit={async (values) => {
               setLoading(true);
@@ -73,14 +69,17 @@ const Signup = ({
                 values.password,
                 values.email,
                 values.firstName,
-                values.lastName,
-                values.adhaarNo
+                values.lastName
               );
               if (!res.isErr) {
                 console.log("SIGNUP RES: ", res);
                 setLoading(false);
-                // toggleDialog();
-                navigation.navigate('VerifyOTP', {res: res});
+                navigation.dispatch(
+                  CommonActions.reset({
+                    index: 0,
+                    routes: [{ name: "Main" }],
+                  })
+                );
               } else {
                 console.log("RES ERR: ", res.res);
                 setLoading(false);
@@ -88,7 +87,14 @@ const Signup = ({
               }
             }}
           >
-            {({ handleChange, handleBlur, handleSubmit, values, errors, touched }) => (
+            {({
+              handleChange,
+              handleBlur,
+              handleSubmit,
+              values,
+              errors,
+              touched,
+            }) => (
               <View style={styles.inputs__wrapper}>
                 <CustomTextInput
                   label="First Name"
@@ -120,6 +126,22 @@ const Signup = ({
                   onSubmitEditing={() => username.current?.focus()}
                   blurOnSubmit={false}
                   ref={lastName}
+                />
+                <CustomTextInput
+                  label="Username"
+                  keyboardType="default"
+                  placeholder="Username"
+                  onChangeText={handleChange("username")}
+                  onBlur={handleBlur("username")}
+                  error={errors.username}
+                  touched={touched.username}
+                  autoComplete="username"
+                  autoCapitalize="none"
+                  returnKeyType="next"
+                  returnKeyLabel="Next"
+                  onSubmitEditing={() => email.current?.focus()}
+                  blurOnSubmit={false}
+                  ref={username}
                 />
                 <CustomTextInput
                   label="Email ID"
@@ -177,10 +199,7 @@ const Signup = ({
                     Something went wrong. Please try again
                   </Text>
                 ) : null}
-                <CustomizedButton
-                  handlePress={handleSubmit}
-                  title={"Get OTP"}
-                />
+                <CustomizedButton handlePress={handleSubmit} title="Signup" />
               </View>
             )}
           </Formik>
@@ -281,9 +300,8 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     borderRadius: 12,
     borderWidth: 1,
-  }
+  },
 });
-
 
 // const miniButtonstyles = StyleSheet.create({
 //   mainBody: {
