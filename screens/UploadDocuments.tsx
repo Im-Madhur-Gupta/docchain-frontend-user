@@ -79,7 +79,7 @@ const UploadDocuments = ({ visible, onClose }: ModalProps) => {
     });
     data.append("PagesNo", "1");
     data.append("Title", fileResponse.name.replace(".pdf", ""));
-    data.append("user", "1");
+    data.append("isVerified", "false");
 
     console.log(data);
 
@@ -87,13 +87,16 @@ const UploadDocuments = ({ visible, onClose }: ModalProps) => {
       try {
         console.log("uploading file", fileResponse);
         const token = await getToken();
-        console.log("Bearer", token);
+        console.log(
+          "Bearer",
+          "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjkwNDUzODM0LCJpYXQiOjE2NzMxNzM4MzQsImp0aSI6IjAzY2ZkMmFjNTRkNTQ3NjViN2M3ZjhhMTcyYjBmN2ViIiwidXNlcl9pZCI6NH0.PWdFSk1XvubMP-UwgOL60Tps_8UmI221jObP7Mp0QsA"
+        );
         const response = await execute({
           method: "POST",
           url: "userpanel/custom-document/",
           data,
           headers: {
-            Authorization: `Bearer ${token}`,
+            Authorization: `Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjkwNDUzODM0LCJpYXQiOjE2NzMxNzM4MzQsImp0aSI6IjAzY2ZkMmFjNTRkNTQ3NjViN2M3ZjhhMTcyYjBmN2ViIiwidXNlcl9pZCI6NH0.PWdFSk1XvubMP-UwgOL60Tps_8UmI221jObP7Mp0QsA`,
             "content-Type": "multipart/form-data",
           },
         });

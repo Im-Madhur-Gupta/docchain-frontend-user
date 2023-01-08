@@ -34,59 +34,36 @@ const MyDocuments: React.FC<Props> = ({ navigation }) => {
   const [data, setData] = React.useState<DocumentData[]>([]);
   const [loading, setLoading] = React.useState<boolean>(true);
 
-  const { execute } = useAxios();
-
   useEffect(() => {
     const getDocs = async () => {
-      const token = await getToken();
-      console.log("Token", token);
-      const response = await execute({
-        url: `/userpanel/profile-documents`,
-        method: "GET",
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const res: Response = response.res;
-      const newData: DocumentData[] = [];
-      const customDocs: CustomDocumentResponse[] = res.Custom_Document;
-      const nadDocs: NADDocumentResponse[] = res.NAD_Document;
-
-      // fill NAD data
-      for (const doc of nadDocs) {
-        for (let [key, value] of Object.entries(doc)) {
-          if (key === "user" || key === "id") continue;
-          newData.push({
-            user: res.user,
-            title: key,
-            pageCount: 1,
-            ID: value,
-            custom: false,
-            isVerified: true,
-          });
-        }
-      }
-
-      // fill custom data
-      for (const doc of customDocs) {
-        newData.push({
-          user: doc.user,
-          title: doc.Title,
-          pageCount: doc.PagesNo,
-          ID: doc.id,
+      const newData = [
+        {
+          ID: 1,
+          title: "Document 1",
+          pageCount: 10,
           custom: true,
-          createdAt: doc.upload_time,
-          uri: doc.File,
-          isVerified: doc.isVerified,
-        });
-      }
+          isVerified: true,
+          user: 1,
+          createdAt: new Date(),
+          uri: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+        },
+        {
+          ID: 2,
+          title: "Document 2",
+          pageCount: 2,
+          custom: true,
+          isVerified: true,
+          user: 1,
+          createdAt: new Date(),
+          uri: "https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf",
+        },
+      ];
       setData(newData);
       setSearchResult(newData);
     };
     getDocs();
+    setLoading(false);
   }, []);
-
-  useEffect(() => {
-    if (data.length > 0) setLoading(false);
-  }, [data]);
 
   const handlePress = (item: DocumentData) => {
     console.log("handlePress", item);
@@ -109,15 +86,9 @@ const MyDocuments: React.FC<Props> = ({ navigation }) => {
   };
 
   return (
-    <View
-      style={{
-        flex: 1,
-        marginTop: 50,
-        marginHorizontal: 10,
-      }}
-    >
+    <View style={styles.container}>
       <SearchBar handleSearch={handleSearch} />
-      <View style={{ flex: 1, marginTop: 20 }}>
+      <View style={styles.subContainer}>
         {loading ? (
           <Loading />
         ) : (
@@ -126,28 +97,17 @@ const MyDocuments: React.FC<Props> = ({ navigation }) => {
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item }) => (
               <Pressable onPress={() => handlePress(item)}>
-                {/*// @ts-ignore */}
-                <View
-                  style={{
-                    backgroundColor: "#EEEEEE",
-                    marginHorizontal: 20,
-                    marginVertical: 10,
-                    borderRadius: 12,
-                    flexDirection: "row",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    padding: 10,
-                    shadowColor: "#000",
-                    shadowOffset: {
-                      width: 0,
-                      height: 2,
-                    },
-                    shadowOpacity: 0.1,
-                    elevation: 5,
-                  }}
-                >
+                <View style={styles.cardContainer}>
+                  <View style={styles.previewContainer}>
+                    <Text style={styles.previewTitle}>{item.title}</Text>
+                    <Text style={styles.previewText}>
+                      {new String(
+                        "Dave is a god and he is too pro. Why you ask? Just because!"
+                      ).repeat(Math.floor(Math.random() * 10) + 1)}
+                    </Text>
+                  </View>
                   <View>
-                    <Card.Title style={{ textAlign: "left" }}>
+                    <Card.Title style={styles.leftAlign}>
                       <Text numberOfLines={1}>{item.title}</Text>
                     </Card.Title>
                     <Text
@@ -174,4 +134,50 @@ const MyDocuments: React.FC<Props> = ({ navigation }) => {
 
 export default MyDocuments;
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    marginTop: 50,
+    marginHorizontal: 5,
+  },
+  subContainer: { flex: 1, marginTop: 20 },
+  cardContainer: {
+    backgroundColor: "#EEEEEE",
+    marginHorizontal: 20,
+    marginVertical: 10,
+    borderRadius: 12,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    padding: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    elevation: 5,
+  },
+  previewContainer: {
+    width: 50,
+    height: 50,
+    borderRadius: 12,
+    backgroundColor: "#FFFFFF",
+    marginRight: 10,
+    opacity: 0.5,
+    overflow: "hidden",
+  },
+  previewTitle: {
+    fontSize: 5,
+    marginLeft: 5,
+    marginTop: 5,
+  },
+  previewText: {
+    fontSize: 2,
+    marginHorizontal: 5,
+    opacity: 0.4,
+  },
+  leftAlign: {
+    textAlign: "left",
+  },
+});
